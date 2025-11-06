@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentBot AI - Tenant Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            height: 90vh;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 320px;
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-card h3 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .info-card .amount {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .info-card .status {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .payment-history {
+            margin-top: 20px;
+        }
+
+        .payment-history h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .history-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #28a745;
+        }
+
+        .history-item.pending {
+            border-left-color: #ffc107;
+        }
+
+        .history-date {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .history-amount {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .history-method {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .view-switch {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .view-switch:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: white;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+
+        .message.user .message-bubble {
+            background: #667eea;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot .message-bubble {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 10px;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .message.user .message-avatar {
+            background: #4c51bf;
+            color: white;
+        }
+
+        .message.bot .message-avatar {
+            background: #48bb78;
+            color: white;
+        }
+
+        .payment-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 10px 0;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .payment-card h4 {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .payment-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .payment-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .payment-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+        }
+
+        .payment-plan-card {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px 0;
+        }
+
+        .payment-plan-card h4 {
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .plan-option {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .plan-option:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .plan-option strong {
+            color: #667eea;
+        }
+
+        .payment-notification {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 10px 0;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .payment-notification h4 {
+            color: #155724;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .payment-notification .tx-id {
+            font-family: monospace;
+            font-size: 12px;
+            color: #155724;
+            background: rgba(21, 87, 36, 0.1);
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 10px;
+            word-break: break-all;
+        }
+
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #userInput:focus {
+            border-color: #667eea;
+        }
+
+        #sendBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #sendBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #sendBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px;
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .quick-actions {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                max-height: 200px;
+            }
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar with tenant info -->
+        <div class="sidebar">
+            <h2>👤 Tenant Portal</h2>
+            
+            <div class="info-card">
+                <h3>YOUR RENT</h3>
+                <div class="amount">$1,900</div>
+                <div class="status">Unit 203 • Due: 1st of each month</div>
+            </div>
+
+            <div class="payment-history">
+                <h3>Payment History</h3>
+                
+                <div class="history-item" id="currentPayment" style="display: none;">
+                    <div class="history-date">Just now</div>
+                    <div class="history-amount">$1,900 USDC</div>
+                    <div class="history-method">✅ Paid via RentBot AI</div>
+                </div>
+
+                <div class="history-item">
+                    <div class="history-date">October 1, 2025</div>
+                    <div class="history-amount">$1,900 USDC</div>
+                    <div class="history-method">✅ Paid via RentBot AI</div>
+                </div>
+
+                <div class="history-item">
+                    <div class="history-date">September 1, 2025</div>
+                    <div class="history-amount">$1,900 USDC</div>
+                    <div class="history-method">✅ Auto-payment</div>
+                </div>
+
+                <div class="history-item">
+                    <div class="history-date">August 1, 2025</div>
+                    <div class="history-amount">$1,900 USDC</div>
+                    <div class="history-method">✅ Auto-payment</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="quick-btn" style="width: 100%;" onclick="window.location.href='dashboard.html'">
+                    📊 View Landlord Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Main chat container -->
+        <div class="container">
+            <div class="header">
+                <div class="header-left">
+    <h1>🤖 RentBot AI</h1>
+    <p>Your Intelligent Rent Payment Assistant on Arc Blockchain</p>
+    </div>
+        <div class="header-right">
+            <button id="demoModeBtn" class="demo-mode-btn" onclick="toggleDemoMode()">
+                🎬 Enable Demo Mode
+            </button>
+                </div>
+            </div>
+            
+
+        <!-- ADD THESE LINES BELOW -->
+        <div class="demo-banner" id="demoBanner" style="display: none;">
+            🎬 DEMO MODE ACTIVE - Click scenarios below to demonstrate features
+        </div>
+
+        <div class="demo-controls" id="demoControls">
+            <span class="demo-label">Quick Scenarios:</span>
+            <button class="demo-scenario-btn" onclick="demoScenario('paytime')">
+                ✅ Happy Payment
+            </button>
+            <button class="demo-scenario-btn" onclick="demoScenario('paymentplan')">
+                📅 Payment Plan
+            </button>
+            <button class="demo-scenario-btn" onclick="demoScenario('late')">
+                ⏰ Late Payment Request
+            </button>
+            <button class="demo-scenario-btn" onclick="demoScenario('autopay')">
+                🔄 Setup Auto-Pay
+            </button>
+            <button class="demo-reset-btn" onclick="resetDemo()">
+                🔄 Reset Demo
+            </button>
+        </div>
+        <!-- END OF DEMO CONTROLS -->
+
+        
+
+            <div class="chat-container" id="chatContainer">
+                <div class="message bot">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-bubble">
+                        Hi! I'm RentBot, your AI-powered rent payment assistant. I can help you with:
+                        <br><br>
+                        💰 Pay your rent with USDC on Arc blockchain<br>
+                        📅 Set up flexible payment plans<br>
+                        🔔 Schedule automatic monthly payments<br>
+                        💬 Answer questions about your rent<br>
+                        📊 View your payment history<br>
+                        <br>
+                        How can I help you today?
+                    </div>
+                </div>
+                <div class="typing-indicator" id="typingIndicator">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="quickMessage('I want to pay my rent')">💰 Pay Rent</button>
+                <button class="quick-btn" onclick="quickMessage('I need a payment plan')">📅 Payment Plan</button>
+                <button class="quick-btn" onclick="quickMessage('Set up auto-pay')">🔄 Auto-Pay</button>
+                <button class="quick-btn" onclick="quickMessage('When is rent due?')">❓ Due Date</button>
+            </div>
+
+            <div class="input-container">
+                <input 
+                    type="text" 
+                    id="userInput" 
+                    placeholder="Type your message here..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button id="sendBtn" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chatContainer');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        let conversationState = {
+            waitingForPaymentPlanChoice: false,
+            paymentAmount: 0
+        };
+
+        function quickMessage(message) {
+            userInput.value = message;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+
+            addMessage(message, 'user');
+            userInput.value = '';
+
+            typingIndicator.style.display = 'block';
+            scrollToBottom();
+
+            // Check if user is responding to payment plan offer
+            if (conversationState.waitingForPaymentPlanChoice) {
+                handlePaymentPlanResponse(message);
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+
+                typingIndicator.style.display = 'none';
+
+                addMessage(data.response, 'bot');
+
+                // Check for payment intent
+                if (data.paymentIntent && data.paymentIntent.detected) {
+                    const amount = data.paymentIntent.amount;
+                    conversationState.paymentAmount = amount;
+                    
+                    // Check if they're asking for a payment plan
+                    if (message.toLowerCase().includes('plan') || 
+                        message.toLowerCase().includes('split') ||
+                        message.toLowerCase().includes('installment')) {
+                        showPaymentPlanOptions(amount);
+                    } else {
+                        showPaymentOption(amount);
+                    }
+                }
+
+                // Check for payment plan keywords without amount
+                if (!data.paymentIntent?.detected && 
+                    (message.toLowerCase().includes('payment plan') || 
+                     message.toLowerCase().includes('pay later') ||
+                     message.toLowerCase().includes('split payment'))) {
+                    showPaymentPlanOptions(1900); // Default rent amount
+                }
+
+            } catch (error) {
+                typingIndicator.style.display = 'none';
+                addMessage('Sorry, I encountered an error. Please make sure the server is running.', 'bot');
+                console.error('Error:', error);
+            }
+
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'user' ? '👤' : '🤖';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = text;
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(bubble);
+
+            chatContainer.insertBefore(messageDiv, typingIndicator);
+            scrollToBottom();
+        }
+
+        function showPaymentOption(amount) {
+            const paymentDiv = document.createElement('div');
+            paymentDiv.className = 'message bot';
+            paymentDiv.innerHTML = `
+                <div class="message-avatar">💳</div>
+                <div class="message-bubble" style="max-width: 400px;">
+                    <div class="payment-card">
+                        <h4>💰 Payment Ready</h4>
+                        <div class="payment-amount">$${amount} USDC</div>
+                        <p style="font-size: 14px; margin-bottom: 15px;">Payment will be processed on Arc blockchain</p>
+                        <button class="payment-btn" onclick="processPayment(${amount})">
+                            ✅ Confirm Payment
+                        </button>
+                    </div>
+                </div>
+            `;
+            chatContainer.insertBefore(paymentDiv, typingIndicator);
+            scrollToBottom();
+        }
+
+        function showPaymentPlanOptions(amount) {
+            conversationState.waitingForPaymentPlanChoice = true;
+            
+            const planDiv = document.createElement('div');
+            planDiv.className = 'message bot';
+            planDiv.innerHTML = `
+                <div class="message-avatar">📅</div>
+                <div class="message-bubble" style="max-width: 500px;">
+                    <div class="payment-plan-card">
+                        <h4>📊 Payment Plan Options for $${amount}</h4>
+                        <p style="margin-bottom: 15px; font-size: 14px;">Choose a plan that works for you:</p>
+                        
+                        <div class="plan-option" onclick="selectPaymentPlan('2week', ${amount})">
+                            <strong>2-Week Plan</strong><br>
+                            <span style="font-size: 14px;">$${(amount/2).toFixed(2)} today + $${(amount/2).toFixed(2)} in 2 weeks</span>
+                        </div>
+                        
+                        <div class="plan-option" onclick="selectPaymentPlan('3part', ${amount})">
+                            <strong>3-Part Plan</strong><br>
+                            <span style="font-size: 14px;">$${(amount/3).toFixed(2)} today + 2 payments of $${(amount/3).toFixed(2)}</span>
+                        </div>
+                        
+                        <div class="plan-option" onclick="selectPaymentPlan('weekly', ${amount})">
+                            <strong>Weekly Plan</strong><br>
+                            <span style="font-size: 14px;">4 weekly payments of $${(amount/4).toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatContainer.insertBefore(planDiv, typingIndicator);
+            scrollToBottom();
+        }
+
+        function selectPaymentPlan(planType, amount) {
+            conversationState.waitingForPaymentPlanChoice = false;
+            
+            let planDetails = '';
+            let firstPayment = 0;
+            
+            switch(planType) {
+                case '2week':
+                    planDetails = `2-Week Plan: $${(amount/2).toFixed(2)} today, $${(amount/2).toFixed(2)} on ${getFutureDate(14)}`;
+                    firstPayment = amount/2;
+                    break;
+                case '3part':
+                    planDetails = `3-Part Plan: $${(amount/3).toFixed(2)} today, then 2 more payments`;
+                    firstPayment = amount/3;
+                    break;
+                case 'weekly':
+                    planDetails = `Weekly Plan: 4 payments of $${(amount/4).toFixed(2)} starting today`;
+                    firstPayment = amount/4;
+                    break;
+            }
+            
+            addMessage(`I'd like the ${planType === '2week' ? '2-Week' : planType === '3part' ? '3-Part' : 'Weekly'} plan`, 'user');
+            
+            setTimeout(() => {
+                addMessage(`Great choice! I've set up your ${planDetails}. Let's process your first payment now.`, 'bot');
+                showPaymentOption(firstPayment);
+            }, 1000);
+        }
+
+        function getFutureDate(days) {
+            const date = new Date();
+            date.setDate(date.getDate() + days);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function handlePaymentPlanResponse(message) {
+            conversationState.waitingForPaymentPlanChoice = false;
+            typingIndicator.style.display = 'none';
+            addMessage("I didn't quite catch that. Please click on one of the payment plan options above.", 'bot');
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+
+        async function processPayment(amount) {
+            addMessage(`Processing payment of $${amount}...`, 'bot');
+
+            try {
+                const response = await fetch('http://localhost:3000/api/payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        amount: amount,
+                        tenantName: 'Demo Tenant'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Show success notification
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'message bot';
+                    successDiv.innerHTML = `
+                        <div class="message-avatar">✅</div>
+                        <div class="message-bubble" style="max-width: 500px;">
+                            <div class="payment-notification">
+                                <h4>🎉 Payment Successful!</h4>
+                                <p style="color: #155724; margin: 10px 0;">
+                                    ${data.message}
+                                </p>
+                                <div class="tx-id">
+                                    <strong>Transaction ID:</strong><br>
+                                    ${data.transactionId}
+                                </div>
+                                <p style="color: #155724; margin-top: 15px; font-size: 14px;">
+                                    ⛓️ Confirmed on Arc Blockchain<br>
+                                    💵 USDC transferred successfully
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    chatContainer.insertBefore(successDiv, typingIndicator);
+                    
+                    // Update payment history in sidebar
+                    document.getElementById('currentPayment').style.display = 'block';
+                    
+                    // Add follow-up message
+                    setTimeout(() => {
+                        addMessage(`Perfect! Your payment has been recorded. Would you like to set up automatic payments for next month?`, 'bot');
+                    }, 1500);
+                }
+
+            } catch (error) {
+                addMessage('Sorry, the payment failed. Please try again.', 'bot');
+                console.error('Payment error:', error);
+            }
+
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Initial focus
+        userInput.focus();
+        // ============ DEMO MODE FUNCTIONS ============
+        
+        let demoModeActive = false;
+
+        function toggleDemoMode() {
+            demoModeActive = !demoModeActive;
+            const btn = document.getElementById('demoModeBtn');
+            const controls = document.getElementById('demoControls');
+            const banner = document.getElementById('demoBanner');
+            
+            if (demoModeActive) {
+                btn.textContent = '🎬 Demo Mode: ON';
+                btn.classList.add('active');
+                controls.classList.add('active');
+                banner.style.display = 'block';
+                addMessage('🎬 Demo Mode activated! Click the scenario buttons above to see RentBot in action.', 'bot');
+            } else {
+                btn.textContent = '🎬 Enable Demo Mode';
+                btn.classList.remove('active');
+                controls.classList.remove('active');
+                banner.style.display = 'none';
+            }
+        }
+
+        async function demoScenario(scenario) {
+            if (!demoModeActive) {
+                alert('Please enable Demo Mode first!');
+                return;
+            }
+
+            // Clear previous demo messages (keep only first bot message)
+            const messages = chatContainer.querySelectorAll('.message');
+            messages.forEach((msg, index) => {
+                if (index > 0) { // Keep the welcome message
+                    msg.remove();
+                }
+            });
+
+            switch(scenario) {
+                case 'paytime':
+                    await runHappyPaymentDemo();
+                    break;
+                case 'paymentplan':
+                    await runPaymentPlanDemo();
+                    break;
+                case 'late':
+                    await runLatePaymentDemo();
+                    break;
+                case 'autopay':
+                    await runAutoPayDemo();
+                    break;
+            }
+        }
+
+        async function runHappyPaymentDemo() {
+            await delay(500);
+            addMessage("I want to pay my rent", 'user');
+            
+            await delay(1500);
+            addMessage("Perfect! I can help you pay your $1,900 rent for Unit 203. Let me process that for you.", 'bot');
+            
+            await delay(1000);
+            showPaymentOption(1900);
+            
+            await delay(2000);
+            addMessage("Great! Click the payment button above to complete the transaction.", 'bot');
+        }
+
+        async function runPaymentPlanDemo() {
+            await delay(500);
+            addMessage("I can't pay the full amount right now. Can I get a payment plan?", 'user');
+            
+            await delay(1500);
+            addMessage("Of course! I understand. Let me set up a flexible payment plan for your $1,900 rent. Here are your options:", 'bot');
+            
+            await delay(1000);
+            showPaymentPlanOptions(1900);
+            
+            await delay(2000);
+            addMessage("Choose the plan that works best for you. I'll handle the rest!", 'bot');
+        }
+
+        async function runLatePaymentDemo() {
+            await delay(500);
+            addMessage("I'm going to be 5 days late this month. Is that okay?", 'user');
+            
+            await delay(1500);
+            addMessage("I understand things happen! Your rent of $1,900 is typically due on the 1st. I can help you set up a grace period or create a payment plan. Would you like me to notify your landlord and arrange a 5-day extension?", 'bot');
+            
+            await delay(2000);
+            addMessage("I've recorded your request. Would you like to make a partial payment now, or wait until the 6th?", 'bot');
+            
+            await delay(1000);
+            showPaymentPlanOptions(1900);
+        }
+
+        async function runAutoPayDemo() {
+            await delay(500);
+            addMessage("Can you automatically charge my rent every month?", 'user');
+            
+            await delay(1500);
+            addMessage("Absolutely! I can set up automatic monthly payments for you. Here's what I'll do:", 'bot');
+            
+            await delay(1000);
+            const autoPayDiv = document.createElement('div');
+            autoPayDiv.className = 'message bot';
+            autoPayDiv.innerHTML = `
+                <div class="message-avatar">🔄</div>
+                <div class="message-bubble" style="max-width: 500px;">
+                    <div class="payment-card">
+                        <h4>🔄 Auto-Pay Setup</h4>
+                        <div style="text-align: left; padding: 15px 0; font-size: 14px;">
+                            <p><strong>Amount:</strong> $1,900 USDC</p>
+                            <p><strong>Frequency:</strong> Monthly (1st of each month)</p>
+                            <p><strong>Start Date:</strong> December 1, 2025</p>
+                            <p><strong>Payment Method:</strong> USDC on Arc</p>
+                            <p style="margin-top: 15px; color: rgba(255,255,255,0.9);">
+                                ✅ You'll receive a reminder 3 days before<br>
+                                ✅ Can pause or cancel anytime<br>
+                                ✅ Instant confirmation after each payment
+                            </p>
+                        </div>
+                        <button class="payment-btn" onclick="confirmAutoPay()">
+                            ✅ Activate Auto-Pay
+                        </button>
+                    </div>
+                </div>
+            `;
+            chatContainer.insertBefore(autoPayDiv, typingIndicator);
+            scrollToBottom();
+            
+            await delay(1500);
+            addMessage("Once activated, you'll never miss a rent payment again! 🎉", 'bot');
+        }
+
+        function confirmAutoPay() {
+            addMessage("Awesome! Auto-pay is now activated. You'll be charged $1,900 USDC on the 1st of each month. I'll send you a reminder 3 days before.", 'bot');
+            
+            setTimeout(() => {
+                const successDiv = document.createElement('div');
+                successDiv.className = 'message bot';
+                successDiv.innerHTML = `
+                    <div class="message-avatar">✅</div>
+                    <div class="message-bubble" style="max-width: 500px;">
+                        <div class="payment-notification">
+                            <h4>🎉 Auto-Pay Activated!</h4>
+                            <p style="color: #155724; margin: 10px 0;">
+                                Your monthly rent will be automatically paid on the 1st of each month.
+                            </p>
+                            <p style="color: #155724; font-size: 14px;">
+                                Next payment: December 1, 2025<br>
+                                You'll receive reminders 3 days in advance.
+                            </p>
+                        </div>
+                    </div>
+                `;
+                chatContainer.insertBefore(successDiv, typingIndicator);
+                scrollToBottom();
+            }, 1000);
+        }
+
+        function resetDemo() {
+            // Clear all messages except the first one
+            const messages = chatContainer.querySelectorAll('.message');
+            messages.forEach((msg, index) => {
+                if (index > 0) { // Keep the welcome message
+                    msg.remove();
+                }
+            });
+            
+            // Hide current payment in sidebar
+            document.getElementById('currentPayment').style.display = 'none';
+            
+            addMessage('Demo reset! Ready for another demonstration. Click a scenario button above.', 'bot');
+            scrollToBottom();
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>
