@@ -123,4 +123,4 @@ MIT License
 
 ---
 
-**Built with ❤️ using Circle, Arc Blockchain, and AI**
+**Built with ❤️ using Circle, Arc Blockchain, and in partnership with AI**
