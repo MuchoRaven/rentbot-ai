@@ -2,3 +2,6 @@ node_modules/
 .env
 *.log
 .DS_Store
+create_entity.js
+generate_cyphertext.js
+register_entity_secret.js

@@ -803,8 +803,11 @@
                                     ${data.transactionId}
                                 </div>
                                 <p style="color: #155724; margin-top: 15px; font-size: 14px;">
-                                    ⛓️ Confirmed on Arc Blockchain<br>
-                                    💵 USDC transferred successfully
+                                    ⛓️ Blockchain: ${data.blockchain || 'Arc Blockchain'}<br>
+                                    💵 ${data.walletProvider || 'USDC transferred successfully'}<br>
+                                    🌐 Network: ${data.network || 'testnet'}<br>
+                                    ${data.fromWallet ? '📤 From: ' + data.fromWallet + '<br>' : ''}
+                                    ${data.toWallet ? '📥 To: ' + data.toWallet : ''}
                                 </p>
                             </div>
                         </div>

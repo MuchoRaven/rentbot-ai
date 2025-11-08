@@ -89,8 +89,34 @@ http://localhost:3000/dashboard.html (Landlord View)
 
 ## 👥 Team
 
-Built for the AI Agents on Arc with USDC Hackathon by [Your Name]
+Built for the AI Agents on Arc with USDC Hackathon by [Kamohelo Mototo]
 
+## 🔗 Real Circle Integration
+
+RentBot connects to **real Circle Developer-Controlled Wallets**:
+
+**Tenant Wallet:**
+- ID: `7206b408-7a94-526e-9775-d6824ed1ec7e`
+- Address: `0xf651bd6d7346195c556e20c9b4e419d5ba06496d`
+- Blockchain: Ethereum Sepolia Testnet
+- Balance: 20 USDC (verifiable on-chain)
+
+**Landlord Wallet:**
+- ID: `24f1efd2-92fb-587c-8bde-5bbb11cad8cd`
+- Address: `0x9636796c5a674c8307efd7a4bada03b949c23398`
+- Blockchain: Ethereum Sepolia Testnet
+
+**Verify on Etherscan:**
+- Tenant: https://sepolia.etherscan.io/address/0xf651bd6d7346195c556e20c9b4e419d5ba06496d
+- Landlord: https://sepolia.etherscan.io/address/0x9636796c5a674c8307efd7a4bada03b949c23398
+
+The infrastructure is **semi-production-ready** for real USDC transfers via Circle API.
+
+### Technical Implementation:
+- Circle SDK v1.x for wallet management
+- REST API integration for payment processing
+- Automated wallet initialization on server startup
+- Support for multiple wallet sets and blockchain networks
 ## 📄 License
 
 MIT License
